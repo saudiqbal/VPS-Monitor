@@ -4,14 +4,14 @@ var refresh_time = 3;
 
 var prev_total = prev_idle = 0;
 
-$(document).ready(function() 
+window.onload = () =>
 {
-    $("#refresh_time").text(refresh_time);
+    document.getElementById('refresh_time').innerText = refresh_time;
     
     highChartsInit();
 
     setInterval(refresh, refresh_time * 1000); 
-});
+};
 
 function highChartsInit() 
 {
@@ -164,7 +164,7 @@ function highChartsInit()
 
 function getDummyData()
 {
-    var chartdata = new Array(), curtime = new Date().getTime();
+    const chartdata = new Array(), curtime = new Date().getTime();
 
     for (i = -399; i <= 0; i++)	chartdata.push([curtime + i * 1000, 0]);
     
@@ -175,48 +175,52 @@ function getDummyData()
 
 function refresh()
 {
-    $.getJSON("getData.php", null, function(data) {
-        var time = (new Date()).getTime();
+    fetch('getData.php')
+        .then(response => response.json())
+        .then(data => {
+            const time = (new Date()).getTime();
 
-        var cpuload = getCpuLoad(data.CPUDetail);
-        var currentram = ((data.memory[1] / data.memory[0]) * 100).toFixed(2);
-        var currenthdd = ((data.storage["used"] / data.storage["total"]) * 100).toFixed(2);
-        var currentcpu = cpuload > 100 ? 100 : cpuload;
+            const cpuload = getCpuLoad(data.CPUDetail);
+            const currentram = ((data.memory[1] / data.memory[0]) * 100).toFixed(2);
+            const currenthdd = ((data.storage["used"] / data.storage["total"]) * 100).toFixed(2);
+            const currentcpu = cpuload > 100 ? 100 : cpuload;
 
-        mainchart.series[0].addPoint([time, parseFloat(currentram)], false, true);
-        mainchart.series[1].addPoint([time, parseFloat(currenthdd)], false, true);
-        mainchart.series[2].addPoint([time, parseFloat(currentcpu)], true, true);
+            mainchart.series[0].addPoint([time, parseFloat(currentram)], false, true);
+            mainchart.series[1].addPoint([time, parseFloat(currenthdd)], false, true);
+            mainchart.series[2].addPoint([time, parseFloat(currentcpu)], true, true);
 
-        $("#ram .usage").html(formatNumber(data.memory[1]) + " GB<br/>Cache: " + formatNumber(data.memory[3]) + " GB");
-        $("#ram .total").text(formatNumber(data.memory[0]));
-        $("#ram .free").text(formatNumber(data.memory[2]));
+            document.querySelector('#ram .usage').innerHTML = formatNumber(data.memory[1]) + " GB<br/>Cache: " + formatNumber(data.memory[3]) + " GB";
+            document.querySelector('#ram .total').innerHTML = formatNumber(data.memory[0]);
+            document.querySelector('#ram .free').innerHTML = formatNumber(data.memory[2]);
 
-        $("#hdd .usage").text(formatNumber(data.storage["used"]));
-        $("#hdd .total").text(formatNumber(data.storage["total"]));
-        $("#hdd .free").text(formatNumber(data.storage["free"]));
+            document.querySelector('#hdd .usage').innerText = formatNumber(data.storage["used"]);
+            document.querySelector('#hdd .total').innerText = formatNumber(data.storage["total"]);
+            document.querySelector('#hdd .free').innerText = formatNumber(data.storage["free"]);
 
-        $("#network .rec").html(formatNumber(data.network[0]) + " bytes <br/>Packets: " + formatNumber(data.network[1]));
-        $("#network .sent").html(formatNumber(data.network[2]) + " bytes <br/>Packets: " + formatNumber(data.network[3]));
+            document.querySelector('#network .rec').innerHTML = formatNumber(data.network[0]) + " bytes <br/>Packets: " + formatNumber(data.network[1]);
+            document.querySelector('#network .sent').innerHTML = formatNumber(data.network[2]) + " bytes <br/>Packets: " + formatNumber(data.network[3]);
 
-        var info = "Uptime: " + getTime(data.uptime) + "<br />Operating System: " + data.OS;
-        $("#general_info").html(info);
+            const info = "Uptime: " + getTime(data.uptime) + "<br />Operating System: " + data.OS;
+            document.getElementById('general_info').innerHTML = info;
 
-        $("#cpu .list-group").empty();
+            document.querySelector('#cpu .list-group').innerHTML = "";
 
-        gauge.series[0].points[0].update(parseFloat(currentcpu));
-        gauge.series[1].points[0].update(parseFloat(currentram));
-        gauge.series[2].points[0].update(parseFloat(currenthdd));
+            gauge.series[0].points[0].update(parseFloat(currentcpu));
+            gauge.series[1].points[0].update(parseFloat(currentram));
+            gauge.series[2].points[0].update(parseFloat(currenthdd));
 
-        for (var i = 0; i < data.CPU.length; i++) 
-        {
-            if(i % 3 === 0)
+            for (var i = 0; i < data.CPU.length; i++) 
             {
-                var listitem = $("<li>", {"class": "list-group-item"});
-                listitem.html(data.CPU[i][1] + "<br />" + data.CPU[i + 1][0] + ": " + data.CPU[i + 1][1] + "<br />" + data.CPU[i + 2][0] + ": " + data.CPU[i + 2][1]);
-                $("#cpu .list-group").append(listitem);
+                if(i % 3 === 0)
+                {
+                    const listitem = document.createElement('li');
+                    listitem.classList.add('list-group-item');
+                    listitem.innerHTML = data.CPU[i][1] + "<br />" + data.CPU[i + 1][0] + ": " + data.CPU[i + 1][1] + "<br />" + data.CPU[i + 2][0] + ": " + data.CPU[i + 2][1];
+
+                    document.querySelector("#cpu .list-group").append(listitem);
+                }
             }
-        }
-    });
+        });
 }
 
 //Calculation by https://github.com/Leo-G/DevopsWiki/wiki/How-Linux-CPU-Usage-Time-and-Percentage-is-calculated
