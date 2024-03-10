@@ -26,7 +26,6 @@ A very simple, single monitoring page that fetches real-time info about your sys
 # Dependencies
 These dependencies are required but already included.
 
-* jQuery
 * Highcharts
 
 # Compatibility
