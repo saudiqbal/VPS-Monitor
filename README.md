@@ -43,7 +43,6 @@ var refresh_time = 3; //every x seconds the page get refreshed
 
 If you want you can have yours below too. Just do a pull request and i'll merge it with pleasure.
 
-* [Click](https://mg-s.us/vps/)
-* [Click](https://michaelbelgium.me/vps/)
+* [Click](https://michaelbelgium.me/vps)
 
-![Image](https://i.imgur.com/xD4meAo.png)
+![Image](https://i.imgur.com/QNEL5BI.png)
