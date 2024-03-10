@@ -1,4 +1,4 @@
-var mainchart, gauge;
+var mainchart;
 
 var refresh_time = 3;
 
@@ -60,106 +60,6 @@ function highChartsInit()
             { name: 'CPU', data: getDummyData() }
         ]
     });
-
-    gauge = Highcharts.chart('gaugeUsage', {
-    
-        chart: {
-            type: 'solidgauge'
-        },
-    
-        title: {
-            text: 'Usage',
-            style: {
-                fontSize: '24px'
-            }
-        },
-    
-        tooltip: {
-            borderWidth: 0,
-            backgroundColor: 'none',
-            shadow: false,
-            style: {
-                fontSize: '16px'
-            },
-            valueSuffix: '%',
-            pointFormat: '{series.name}<br><span style="font-size:1.5em; color: {point.color}; font-weight: bold">{point.y}</span>',
-            positioner: function (labelWidth) {
-                return {
-                    x: (this.chart.chartWidth - labelWidth) / 2,
-                    y: (this.chart.plotHeight / 2) + 15
-                };
-            }
-        },
-    
-        pane: {
-            startAngle: 0,
-            endAngle: 360,
-            background: [{ //CPU
-                outerRadius: '112%',
-                innerRadius: '88%',
-                backgroundColor: Highcharts.color(Highcharts.getOptions().colors[0])
-                    .setOpacity(0.3)
-                    .get(),
-                borderWidth: 0
-            }, { //RAM
-                outerRadius: '87%',
-                innerRadius: '63%',
-                backgroundColor: Highcharts.color(Highcharts.getOptions().colors[1])
-                    .setOpacity(0.3)
-                    .get(),
-                borderWidth: 0
-            }, { //HDD
-                outerRadius: '62%',
-                innerRadius: '38%',
-                backgroundColor: Highcharts.color(Highcharts.getOptions().colors[2])
-                    .setOpacity(0.3)
-                    .get(),
-                borderWidth: 0
-            }]
-        },
-    
-        yAxis: {
-            min: 0,
-            max: 100,
-            lineWidth: 0,
-            tickPositions: []
-        },
-    
-        plotOptions: {
-            solidgauge: {
-                dataLabels: {
-                    enabled: false
-                },
-                rounded: true
-            }
-        },
-    
-        series: [{
-            name: 'CPU',
-            data: [{
-                color: Highcharts.getOptions().colors[0],
-                radius: '112%',
-                innerRadius: '88%',
-                y: 0
-            }]
-        }, {
-            name: 'RAM',
-            data: [{
-                color: Highcharts.getOptions().colors[1],
-                radius: '87%',
-                innerRadius: '63%',
-                y: 0
-            }]
-        }, {
-            name: 'HDD',
-            data: [{
-                color: Highcharts.getOptions().colors[2],
-                radius: '62%',
-                innerRadius: '38%',
-                y: 0
-            }]
-        }]
-    });
 }
 
 function getDummyData()
@@ -189,13 +89,13 @@ function refresh()
             mainchart.series[1].addPoint([time, parseFloat(currenthdd)], false, true);
             mainchart.series[2].addPoint([time, parseFloat(currentcpu)], true, true);
 
-            document.querySelector('#ram .usage').innerHTML = formatNumber(data.memory[1]) + " GB<br/>Cache: " + formatNumber(data.memory[3]) + " GB";
-            document.querySelector('#ram .total').innerHTML = formatNumber(data.memory[0]);
-            document.querySelector('#ram .free').innerHTML = formatNumber(data.memory[2]);
+            document.querySelector('#ram-usage .usage').innerHTML = formatNumber(data.memory[1]) + " GB<br/>Cache: " + formatNumber(data.memory[3]) + " GB";
+            document.querySelector('#ram-usage .total').innerHTML = formatNumber(data.memory[0]);
+            document.querySelector('#ram-usage .free').innerHTML = formatNumber(data.memory[2]);
 
-            document.querySelector('#hdd .usage').innerText = formatNumber(data.storage["used"]);
-            document.querySelector('#hdd .total').innerText = formatNumber(data.storage["total"]);
-            document.querySelector('#hdd .free').innerText = formatNumber(data.storage["free"]);
+            document.querySelector('#drive-usage .usage').innerText = formatNumber(data.storage["used"]);
+            document.querySelector('#drive-usage .total').innerText = formatNumber(data.storage["total"]);
+            document.querySelector('#drive-usage .free').innerText = formatNumber(data.storage["free"]);
 
             document.querySelector('#network .rec').innerHTML = formatNumber(data.network[0]) + " bytes <br/>Packets: " + formatNumber(data.network[1]);
             document.querySelector('#network .sent').innerHTML = formatNumber(data.network[2]) + " bytes <br/>Packets: " + formatNumber(data.network[3]);
@@ -203,11 +103,18 @@ function refresh()
             const info = "Uptime: " + getTime(data.uptime) + "<br />Operating System: " + data.OS;
             document.getElementById('general_info').innerHTML = info;
 
-            document.querySelector('#cpu .list-group').innerHTML = "";
+            document.querySelector('#cpu-usage .list-group').innerHTML = "";
 
-            gauge.series[0].points[0].update(parseFloat(currentcpu));
-            gauge.series[1].points[0].update(parseFloat(currentram));
-            gauge.series[2].points[0].update(parseFloat(currenthdd));
+            document.querySelector('#cpu-usage h3').innerText = parseFloat(currentcpu) + "%";
+            document.querySelector('#ram-usage h3').innerText = parseFloat(currentram) + "%";
+            document.querySelector('#drive-usage h3').innerText = parseFloat(currenthdd) + "%";
+
+            document.querySelector('#cpu-usage .progress-bar').style.width = parseFloat(currentcpu) + "%";
+            document.querySelector('#ram-usage .progress-bar').style.width = parseFloat(currentram) + "%";
+            document.querySelector('#drive-usage .progress-bar').style.width = parseFloat(currenthdd) + "%";
+
+            document.querySelector('#ram-usage .card-subtitle').innerText = formatNumber(data.memory[1]) + ' GB out of ' + formatNumber(data.memory[0]) + ' GB';
+            document.querySelector('#drive-usage .card-subtitle').innerText = formatNumber(data.storage["used"]) + ' GB out of ' + formatNumber(data.storage["total"]) + ' GB';
 
             for (var i = 0; i < data.CPU.length; i++) 
             {
@@ -217,7 +124,7 @@ function refresh()
                     listitem.classList.add('list-group-item');
                     listitem.innerHTML = data.CPU[i][1] + "<br />" + data.CPU[i + 1][0] + ": " + data.CPU[i + 1][1] + "<br />" + data.CPU[i + 2][0] + ": " + data.CPU[i + 2][1];
 
-                    document.querySelector("#cpu .list-group").append(listitem);
+                    document.querySelector("#cpu-usage .list-group").append(listitem);
                 }
             }
         });
