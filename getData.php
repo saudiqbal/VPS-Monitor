@@ -1,19 +1,21 @@
 <?php
 	$tmp = null;
+	$dt = shell_exec('df -k | awk \'$1=="/dev/sda1"{print $2}\'') * 1000;
+	$df = shell_exec('df -k | awk \'$1=="/dev/sda1"{print $4}\'') * 1000;
 
 	$data = array(
 		"memory" => array_map(
 			function($value) {
-				return (int)$value / 1000000;
+				return (int)$value * 1000;
 			},
 			explode(" ", exec("free | grep 'Mem:' | awk {'print $2\" \"$3\" \"$4\" \"$6'}"))
 		),
 		"CPUDetail" => trim(exec("sed -n 's/^cpu\s//p' /proc/stat")),
 		"CPU" => array(),
 		"storage" => array(
-			"total" => disk_total_space("/") / 1000000000, 
-			"free" => disk_free_space("/") / 1000000000, 
-			"used" => (disk_total_space("/") - disk_free_space("/")) / 1000000000
+			"total" => $dt,
+			"free" => $df,
+			"used" => $dt - $df
 		),
 		"network" => array_map('intval', explode(" ",exec("cat /proc/net/dev | grep 'eth0:' | awk {'print $2\" \"$3\" \"$10\" \"$11'}"))),
 		"uptime" => (int)exec("cut -d. -f1 /proc/uptime"),
