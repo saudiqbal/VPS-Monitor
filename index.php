@@ -7,10 +7,9 @@
     </head>
 
     <body>
-        <div class="container-fluid py-2">
+    <div class="container-fluid py-2">
             <div class="row">
                 <div class="col">
-                    <div class="alert alert-warning" role="alert"><b>Note:</b> Content refreshes every <span id="refresh_time"></span> second(s).</div>
                     <div class="alert alert-info" role="alert" id="general_info">-</div>
                 </div>
             </div>
@@ -32,8 +31,8 @@
                         </div>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item list-group-item-danger">Usage: <span class="usage">0</span></li>
-                            <li class="list-group-item list-group-item-info">Total: <span class="total">0</span> GB</li>
-                            <li class="list-group-item list-group-item-success">Free: <span class="free">0</span> GB</li>
+                            <li class="list-group-item list-group-item-info">Total: <span class="total">0</span></li>
+                            <li class="list-group-item list-group-item-success">Free: <span class="free">0</span></li>
                         </ul>
                     </div>
                 </div>
@@ -50,9 +49,9 @@
                             <div class="progress-bar" style="width: 0%"></div>
                         </div>
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item list-group-item-danger">Usage: <span class="usage">0</span> GB</li>
-                            <li class="list-group-item list-group-item-info">Total: <span class="total">0</span> GB</li>
-                            <li class="list-group-item list-group-item-success">Free: <span class="free">0</span> GB</li>
+                            <li class="list-group-item list-group-item-danger">Usage: <span class="usage">0</span></li>
+                            <li class="list-group-item list-group-item-info">Total: <span class="total">0</span></li>
+                            <li class="list-group-item list-group-item-success">Free: <span class="free">0</span></li>
                         </ul>
                     </div>
                 </div>
