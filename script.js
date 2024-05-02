@@ -1,12 +1,11 @@
 var mainchart;
 
-var refresh_time = 3;
+var refresh_time = 1;
 
 var prev_total = prev_idle = 0;
 
 window.onload = () =>
 {
-    document.getElementById('refresh_time').innerText = refresh_time;
     
     highChartsInit();
 
@@ -75,7 +74,7 @@ function getDummyData()
 
 function refresh()
 {
-    fetch('getData.php')
+    fetch('/lib/getData.php')
         .then(response => response.json())
         .then(data => {
             const time = (new Date()).getTime();
@@ -89,16 +88,16 @@ function refresh()
             mainchart.series[1].addPoint([time, parseFloat(currenthdd)], false, true);
             mainchart.series[2].addPoint([time, parseFloat(currentcpu)], true, true);
 
-            document.querySelector('#ram-usage .usage').innerHTML = formatNumber(data.memory[1]) + " GB<br/>Cache: " + formatNumber(data.memory[3]) + " GB";
-            document.querySelector('#ram-usage .total').innerHTML = formatNumber(data.memory[0]);
-            document.querySelector('#ram-usage .free').innerHTML = formatNumber(data.memory[2]);
+            document.querySelector('#ram-usage .usage').innerHTML = formatBytes(data.memory[1]) + " <br/>Cache: " + formatBytes(data.memory[3]);
+            document.querySelector('#ram-usage .total').innerHTML = formatBytes(data.memory[0]);
+            document.querySelector('#ram-usage .free').innerHTML = formatBytes(data.memory[2]);
 
-            document.querySelector('#drive-usage .usage').innerText = formatNumber(data.storage["used"]);
-            document.querySelector('#drive-usage .total').innerText = formatNumber(data.storage["total"]);
-            document.querySelector('#drive-usage .free').innerText = formatNumber(data.storage["free"]);
+            document.querySelector('#drive-usage .usage').innerText = formatBytes(data.storage["used"]);
+            document.querySelector('#drive-usage .total').innerText = formatBytes(data.storage["total"]);
+            document.querySelector('#drive-usage .free').innerText = formatBytes(data.storage["free"]);
 
-            document.querySelector('#network .rec').innerHTML = formatNumber(data.network[0]) + " bytes <br/>Packets: " + formatNumber(data.network[1]);
-            document.querySelector('#network .sent').innerHTML = formatNumber(data.network[2]) + " bytes <br/>Packets: " + formatNumber(data.network[3]);
+            document.querySelector('#network .rec').innerHTML = formatBytes(data.network[0]) + " <br/>Packets: " + data.network[1];
+            document.querySelector('#network .sent').innerHTML = formatBytes(data.network[2]) + " <br/>Packets: " + data.network[3];
 
             const info = "Uptime: " + getTime(data.uptime) + "<br />Operating System: " + data.OS;
             document.getElementById('general_info').innerHTML = info;
@@ -113,8 +112,8 @@ function refresh()
             document.querySelector('#ram-usage .progress-bar').style.width = parseFloat(currentram) + "%";
             document.querySelector('#drive-usage .progress-bar').style.width = parseFloat(currenthdd) + "%";
 
-            document.querySelector('#ram-usage .card-subtitle').innerText = formatNumber(data.memory[1]) + ' GB out of ' + formatNumber(data.memory[0]) + ' GB';
-            document.querySelector('#drive-usage .card-subtitle').innerText = formatNumber(data.storage["used"]) + ' GB out of ' + formatNumber(data.storage["total"]) + ' GB';
+            document.querySelector('#ram-usage .card-subtitle').innerText = formatBytes(data.memory[1]) + ' out of ' + formatBytes(data.memory[0]);
+            document.querySelector('#drive-usage .card-subtitle').innerText = formatBytes(data.storage["used"]) + ' out of ' + formatBytes(data.storage["total"]);
 
             for (var i = 0; i < data.CPU.length; i++) 
             {
@@ -153,7 +152,15 @@ function getCpuLoad(input)
 
 function formatNumber(number)
 {
-    return number.toLocaleString("nl").replace(/\./g, " ");
+    return number.toLocaleString("en-US");
+}
+function formatBytes(bytes,decimals) {
+   if(bytes == 0) return '0 Bytes';
+   var k = 1024,
+       dm = decimals <= 0 ? 0 : decimals || 2,
+       sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+       i = Math.floor(Math.log(bytes) / Math.log(k));
+   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
 function getTime(seconds) 
