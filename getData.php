@@ -2,6 +2,7 @@
 	$tmp = null;
 	$dt = shell_exec('df -k | awk \'$1=="/dev/sda1"{print $2}\'') * 1000;
 	$df = shell_exec('df -k | awk \'$1=="/dev/sda1"{print $4}\'') * 1000;
+	$ipaddress = $_SERVER["REMOTE_ADDR"];
 
 	$data = array(
 		"memory" => array_map(
@@ -17,9 +18,10 @@
 			"free" => $df,
 			"used" => $dt - $df
 		),
-		"network" => array_map('intval', explode(" ",exec("cat /proc/net/dev | grep 'eth0:' | awk {'print $2\" \"$3\" \"$10\" \"$11'}"))),
+		"network" => array_map('intval', explode(" ",exec("cat /proc/net/dev | grep 'ens18:' | awk {'print $2\" \"$3\" \"$10\" \"$11'}"))),
 		"uptime" => (int)exec("cut -d. -f1 /proc/uptime"),
-		"OS" => exec("cat /etc/*-release | grep 'PRETTY_NAME' | cut -d \\\" -f2")
+		"OS" => exec("cat /etc/*-release | grep 'PRETTY_NAME' | cut -d \\\" -f2"),
+		"currentip" => $ipaddress
 	);
 
 	exec("cat /proc/cpuinfo | grep -i 'model name\|cpu cores\|cpu mhz'", $tmp);
