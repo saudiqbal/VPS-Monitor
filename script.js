@@ -176,5 +176,10 @@ function getTime(seconds)
     var minutes = Math.floor(leftover / 60);
     leftover = leftover - (minutes * 60);
 
+	hours = hours.toString().padStart(2, '0');
+	minutes = minutes.toString().padStart(2, '0');
+	seconds = seconds.toString().padStart(2, '0');
+	leftover = leftover.toString().padStart(2, '0');
+
     return days + " days, " + hours + " hours, " + minutes + " minutes, " + leftover + " seconds";
 }
