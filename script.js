@@ -183,5 +183,15 @@ function getTime(seconds)
 	seconds = seconds.toString().padStart(2, '0');
 	leftover = leftover.toString().padStart(2, '0');
 
-    return days + " days, " + hours + ":" + minutes + ":" + leftover;
+	if(days == 0)
+	{
+		days = '';
+		var daytext = '';
+	}
+	else
+	{
+		var daytext = ' days, ';
+	}
+
+    return days + daytext + hours + ":" + minutes + ":" + leftover;
 }
