@@ -99,7 +99,7 @@ function refresh()
             document.querySelector('#network .rec').innerHTML = formatBytes(data.network[0]) + " <br/>Packets: " + data.network[1];
             document.querySelector('#network .sent').innerHTML = formatBytes(data.network[2]) + " <br/>Packets: " + data.network[3];
 
-            const info = "Uptime: " + getTime(data.uptime) + "<br />Operating System: " + data.OS;
+            const info = "Uptime: " + getTime(data.uptime) + "<br />Operating System: " + data.OS + "<br />IP Address: " + data.currentip;
             document.getElementById('general_info').innerHTML = info;
 
             document.querySelector('#cpu-usage .list-group').innerHTML = "";
@@ -171,9 +171,11 @@ function getTime(seconds)
     leftover = leftover - (days * 86400);
 
     var hours = Math.floor(leftover / 3600);
-    leftover = leftover - (hours * 3600);
+
+	leftover = leftover - (hours * 3600);
 
     var minutes = Math.floor(leftover / 60);
+
     leftover = leftover - (minutes * 60);
 
 	hours = hours.toString().padStart(2, '0');
@@ -181,5 +183,5 @@ function getTime(seconds)
 	seconds = seconds.toString().padStart(2, '0');
 	leftover = leftover.toString().padStart(2, '0');
 
-    return days + " days, " + hours + " hours, " + minutes + " minutes, " + leftover + " seconds";
+    return days + " days, " + hours + ":" + minutes + ":" + leftover;
 }
